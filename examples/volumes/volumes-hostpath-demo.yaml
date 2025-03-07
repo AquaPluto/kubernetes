@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: volumes-hostpath-demo
+spec:
+  containers:
+  - name: redis
+    image: redis:7-alpine
+    ports:
+    - containerPort: 6379
+      name: redisport
+    imagePullPolicy: IfNotPresent
+    volumeMounts:
+    - name: redisdata
+      mountPath: /data
+  volumes:
+  - name: redisdata
+    hostPath:
+      type: DirectoryOrCreate
+      path: /data/redis
+
