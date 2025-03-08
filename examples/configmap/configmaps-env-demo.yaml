@@ -1,0 +1,30 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: demoapp-config
+data:
+  demoapp.port: "8080"
+  demoapp.host: 127.0.0.1
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmaps-env-demo
+spec:
+  containers:
+  - image: ikubernetes/demoapp:v1.0
+    name: demoapp
+    env:
+    - name: PORT
+      valueFrom:
+        configMapKeyRef:
+          name: demoapp-config
+          key: demoapp.port
+          optional: false
+    - name: HOST
+      valueFrom:
+        configMapKeyRef:
+          name: demoapp-config
+          key: demoapp.host
+          optional: true
