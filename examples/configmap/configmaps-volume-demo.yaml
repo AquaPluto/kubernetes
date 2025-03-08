@@ -1,0 +1,46 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config-files
+data:
+  myserver-gzip.cfg: |
+    gzip on;
+    gzip_comp_level 8;
+    gzip_proxied     expired no-cache no-store private auth;
+    gzip_types text/plain text/css application/xml text/javascript;
+  myserver-status.cfg: |
+    location /nginx-status {
+        stub_status on;
+        access_log off;
+    }
+  myserver.conf: |
+    server {
+        listen 8080;
+        server_name www.ikubernetes.io;
+
+        include /etc/nginx/conf.d/myserver-*.cfg;
+
+        location / {
+            root /usr/share/nginx/html;
+        }
+    }
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmaps-volume-demo
+  namespace: default
+spec:
+  containers:
+  - image: nginx:alpine
+    name: nginx-server
+    volumeMounts:
+    - name: ngxconfs
+      mountPath: /etc/nginx/conf.d/
+      readOnly: true
+  volumes:
+  - name: ngxconfs
+    configMap:
+      name: nginx-config-files
+      optional: false
