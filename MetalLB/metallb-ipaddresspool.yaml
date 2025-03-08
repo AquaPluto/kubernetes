@@ -1,0 +1,10 @@
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: localip-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 10.0.0.51-10.0.0.80
+  autoAssign: true
+  avoidBuggyIPs: true
