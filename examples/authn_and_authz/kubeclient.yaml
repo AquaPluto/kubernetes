@@ -1,0 +1,38 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  creationTimestamp: null
+  name: kubectl-user
+  namespace: demo
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  creationTimestamp: null
+  name: kubectl-user-admin
+  namespace: demo
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: admin
+subjects:
+- kind: ServiceAccount
+  name: kubectl-user
+  namespace: demo
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: kubeclient
+  namespace: demo
+spec:
+  containers:
+  - image: bitnami/kubectl:latest
+    name: kubectl
+    imagePullPolicy: IfNotPresent
+    command:
+    - "/bin/sh"
+    - "-c"
+    - "sleep 99999"
+  serviceAccountName: kubectl-user
