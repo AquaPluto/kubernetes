@@ -1,0 +1,60 @@
+expose:
+  type: ingress
+  tls:
+    enabled: true  
+    certSource: auto
+  ingress:
+    hosts:
+      core: registry.wu.com
+    className: "nginx"
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+ipFamily:
+  ipv4:
+    enabled: true
+  ipv6:
+    enabled: false
+ 
+
+externalURL: https://registry.wu.com
+
+# 持久化存储配置部分
+persistence:
+  enabled: true 
+  resourcePolicy: "keep"
+  persistentVolumeClaim:        # 定义Harbor各个组件的PVC持久卷
+    registry:          # registry组件（持久卷）
+      storageClass: "nfs-csi"           # 前面创建的StorageClass，其它组件同样配置
+      accessMode: ReadWriteMany          # 卷的访问模式，需要修改为ReadWriteMany
+      size: 5Gi
+    chartmuseum:     # chartmuseum组件（持久卷）
+      storageClass: "nfs-csi"
+      accessMode: ReadWriteMany
+      size: 5Gi
+    jobservice:
+      jobLog:
+        storageClass: "nfs-csi"
+        accessMode: ReadWriteOnce
+        size: 1Gi
+      #scanDataExports:
+      #  storageClass: "nfs-csi"
+      #  accessMode: ReadWriteOnce
+      #  size: 1Gi
+    database:        # PostgreSQl数据库组件
+      storageClass: "nfs-csi"
+      accessMode: ReadWriteMany
+      size: 2Gi
+    redis:    # Redis缓存组件
+      storageClass: "nfs-csi"
+      accessMode: ReadWriteMany
+      size: 2Gi
+    trivy:         # Trity漏洞扫描
+      storageClass: "nfs-csi"
+      accessMode: ReadWriteMany
+      size: 5Gi
+
+harborAdminPassword: "123456"
